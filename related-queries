@@ -1,0 +1,108 @@
+#install pytrends
+!pip install pytrends
+#import the libraries
+import pandas as pd
+
+from pytrends.request import TrendReq
+pytrends = TrendReq(hl='en-US', tz=360, timeout=(10,25), retries=2, backoff_factor=0.1)
+GET_METHOD='get'
+
+import requests
+
+cookies = {
+    '__utmc': '10102256',
+    '__utma': '10102256.1670931407.1667489742.1669895674.1670235964.11',
+    '__utmz': '10102256.1670235964.11.9.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)',
+    '__utmt': '1',
+    '__utmb': '10102256.22.9.1670236130378',
+    'SEARCH_SAMESITE': 'CgQI4pYB',
+    'SOCS': 'CAISHAgCEhJnd3NfMjAyMjEwMzEtMF9SQzIaAmVuIAEaBgiAiYybBg',
+    'S': 'billing-ui-v3=K1haeDQvbY6cOoc-_2689HfdlfVdsUf5:billing-ui-v3-efe=K1haeDQvbY6cOoc-_2689HfdlfVdsUf5',
+    '1P_JAR': '2022-12-1-11',
+    'AEC': 'AakniGMFkVwI0VnUfaCmw52UyDACsPwTcDaOMZppUtMqMMEIGRfhIgiN0Ww',
+    'NID': '511=j-croRiS5ggqqsfKUzgGdzYo_L_YztOUsqkE8737wYyWXsGpz-6yyEfoGuZKsQttEzwc2a9_eplf5zU18GZu6TjeQDY1kvfXUG5cWgIK8mclMHYNEMCVXuYrF6kdxXs3DqMGj_-NgGz3Mq59rOFNAywSVMi2CYz4L7h0MTHN7mHpeF7Mmq8XZ4YPQRqHQyCuJZ8ZcgEcAvBZvDEecea0k5PkBf04HrDNa-CCRrng1tcIi_2i-3GWb9gKXChxbVELS0hiW2nageh1p4_xodDKrlnaQ5yolK1ySpCgSv-0Yjc3nsAK5sYF5Mk-CA',
+    'SID': 'RAhwrH08Vt0MJQ5y2beWaPg7l_o5q6uhema_qnoTRvdKFoQbenfqj4Z1MExdSORbbbtfgw.',
+    '__Secure-1PSID': 'RAhwrH08Vt0MJQ5y2beWaPg7l_o5q6uhema_qnoTRvdKFoQbN2ew5h43TWonpJZy-eG2jg.',
+    '__Secure-3PSID': 'RAhwrH08Vt0MJQ5y2beWaPg7l_o5q6uhema_qnoTRvdKFoQbCnkwpMUtLrZtOBTMSUfEEQ.',
+    'HSID': 'AseQBHykwjCuLeMtJ',
+    'SSID': 'AxJavum8lXYEAXZaD',
+    'APISID': 'eWJmPvT_gSgZsHUv/A0AEPlQzU_pin5VyA',
+    'SAPISID': 'awA7mnuo-2US0adf/AOt18sYs4Ja2zViov',
+    '__Secure-1PAPISID': 'awA7mnuo-2US0adf/AOt18sYs4Ja2zViov',
+    '__Secure-3PAPISID': 'awA7mnuo-2US0adf/AOt18sYs4Ja2zViov',
+    'SIDCC': 'AIKkIs17yV6zQr1LKUbJ-7YZ9UI61yXgK-9ZSLyz_2-TdNc8O5YS2sze-ZZPoNP1MyCuRqHB_w',
+    '__Secure-1PSIDCC': 'AIKkIs1ZfUqa26CJbseDRGsLnuD-SsYgG2YAXfQyXIogf2JtZaz___tNJLcNH2QDQ9oubAekZg',
+    '__Secure-3PSIDCC': 'AIKkIs35cDhj6fIEBP92Khc2Ml1LM6TX0J3mlzcRrtSPgNfJn5xWu3RktdtBfXimOqU20-ezBqg',
+}
+
+headers = {
+    'authority': 'trends.google.com',
+    'accept': 'application/json, text/plain, */*',
+    'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+    # 'cookie': '__utmc=10102256; __utma=10102256.1670931407.1667489742.1669895674.1670235964.11; __utmz=10102256.1670235964.11.9.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided); __utmt=1; __utmb=10102256.22.9.1670236130378; SEARCH_SAMESITE=CgQI4pYB; SOCS=CAISHAgCEhJnd3NfMjAyMjEwMzEtMF9SQzIaAmVuIAEaBgiAiYybBg; S=billing-ui-v3=K1haeDQvbY6cOoc-_2689HfdlfVdsUf5:billing-ui-v3-efe=K1haeDQvbY6cOoc-_2689HfdlfVdsUf5; 1P_JAR=2022-12-1-11; AEC=AakniGMFkVwI0VnUfaCmw52UyDACsPwTcDaOMZppUtMqMMEIGRfhIgiN0Ww; NID=511=j-croRiS5ggqqsfKUzgGdzYo_L_YztOUsqkE8737wYyWXsGpz-6yyEfoGuZKsQttEzwc2a9_eplf5zU18GZu6TjeQDY1kvfXUG5cWgIK8mclMHYNEMCVXuYrF6kdxXs3DqMGj_-NgGz3Mq59rOFNAywSVMi2CYz4L7h0MTHN7mHpeF7Mmq8XZ4YPQRqHQyCuJZ8ZcgEcAvBZvDEecea0k5PkBf04HrDNa-CCRrng1tcIi_2i-3GWb9gKXChxbVELS0hiW2nageh1p4_xodDKrlnaQ5yolK1ySpCgSv-0Yjc3nsAK5sYF5Mk-CA; SID=RAhwrH08Vt0MJQ5y2beWaPg7l_o5q6uhema_qnoTRvdKFoQbenfqj4Z1MExdSORbbbtfgw.; __Secure-1PSID=RAhwrH08Vt0MJQ5y2beWaPg7l_o5q6uhema_qnoTRvdKFoQbN2ew5h43TWonpJZy-eG2jg.; __Secure-3PSID=RAhwrH08Vt0MJQ5y2beWaPg7l_o5q6uhema_qnoTRvdKFoQbCnkwpMUtLrZtOBTMSUfEEQ.; HSID=AseQBHykwjCuLeMtJ; SSID=AxJavum8lXYEAXZaD; APISID=eWJmPvT_gSgZsHUv/A0AEPlQzU_pin5VyA; SAPISID=awA7mnuo-2US0adf/AOt18sYs4Ja2zViov; __Secure-1PAPISID=awA7mnuo-2US0adf/AOt18sYs4Ja2zViov; __Secure-3PAPISID=awA7mnuo-2US0adf/AOt18sYs4Ja2zViov; SIDCC=AIKkIs17yV6zQr1LKUbJ-7YZ9UI61yXgK-9ZSLyz_2-TdNc8O5YS2sze-ZZPoNP1MyCuRqHB_w; __Secure-1PSIDCC=AIKkIs1ZfUqa26CJbseDRGsLnuD-SsYgG2YAXfQyXIogf2JtZaz___tNJLcNH2QDQ9oubAekZg; __Secure-3PSIDCC=AIKkIs35cDhj6fIEBP92Khc2Ml1LM6TX0J3mlzcRrtSPgNfJn5xWu3RktdtBfXimOqU20-ezBqg',
+    'referer': 'https://trends.google.com/trends/explore?date=now%207-d&q=podcasts',
+    'sec-ch-ua': '"Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"macOS"',
+    'sec-fetch-dest': 'empty',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-site': 'same-origin',
+    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+    'x-client-data': 'CIi2yQEIprbJAQjEtskBCKmdygEI99/KAQiSocsBCMXGzAEI8u3MAQiN98wBCMz5zAEI9PnMAQjI+swBCPH6zAEIp/vMAQjv/8wBCIaBzQE=',
+}
+
+params = {
+    'hl': 'en-GB',
+    'tz': '0',
+}
+
+response = requests.get(
+    'https://trends.google.com/trends/api/explore/pickers/geo',
+    params=params,
+    cookies=cookies,
+    headers=headers,
+)
+
+kw_list = ['podcasts','music']
+
+pytrends.build_payload(kw_list, timeframe='now 1-d', geo='GB')
+
+related_queries=pytrends.related_queries()
+
+def make_table(keyword):
+
+    #Select Dataframe From Dict
+    related_query=related_queries[keyword]
+
+    #Select Top Related Queries & Rename Columns
+    top_query=related_query['top']
+    
+    if top_query is not None: 
+        top_query=top_query.rename(columns={'query':'Top Search Terms', 'value':'Interest'})
+        top_query=top_query.head(12)
+    else:
+        pass
+        
+    #Select Rising Queries & Rename Columns
+    rising_query=related_query['rising']
+    
+    if rising_query is not None:
+        rising_query=rising_query.rename(columns={'query':'Rising In Popularity', 'value':'Change %'})
+        rising_query=rising_query.head(12)
+    else:
+        pass
+    
+    #Join The Two Tables Together For Easier Viewing
+    if (rising_query is None) and (top_query is None):
+        pass
+    else:
+        combined_query=pd.concat([top_query,rising_query], axis=1)
+        combined=combined_query.dropna(how='any', axis=0)
+        return combined 
+
+    
+df_1=make_table('podcasts')
+df_12=make_table('music')
+
+df_1
+df_12
